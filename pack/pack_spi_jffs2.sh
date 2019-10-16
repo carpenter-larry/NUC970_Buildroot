@@ -18,6 +18,11 @@ toHexFromStr()
 # data=$?
 # printf $data
 
+cp ${BASE_DIR}/images/u-boot.bin ${BASE_DIR}/../pack/
+cp ${BASE_DIR}/images/uImage ${BASE_DIR}/../pack/
+cp ${BASE_DIR}/images/rootfs.jffs2 ${BASE_DIR}/../pack/
+cd ${BASE_DIR}/../pack/
+
 Init_Maker="0x00000005"
 Uboot_File='u-boot.bin'
 Kernel_File='uImage'
@@ -41,10 +46,10 @@ storageSize=$((64*1024))
 
 #FILE_Len=$(((Uboot_Size+storageSize-1)/storageSize*storageSize))
 #FILE_Len=$((FILE_Len+(Kernel_Size+storageSize-1)/storageSize*storageSize))
-Uboot_Size=$((Uboot_Size+16+8+(50*8)))
-if [ $((Uboot_Size/16*16)) -ne $((Uboot_Size)) ];then
-	Uboot_Size=$(((Uboot_Size/16+1)*16))
-fi
+Uboot_Size=$((Uboot_Size+16+8+(51*8)))
+#if [ $((Uboot_Size/16*16)) -ne $((Uboot_Size)) ];then
+#	Uboot_Size=$(((Uboot_Size/16+1)*16))
+#fi
 if [ $((Kernel_Size/16*16)) -ne $((Kernel_Size)) ];then
 	Kernel_Size=$(((Kernel_Size/16+1)*16))
 fi
@@ -88,7 +93,7 @@ printf '\x54' >> $PACK_FILE
 printf '\x56' >> $PACK_FILE
 printf '\x4E' >> $PACK_FILE
 toHexFromStr '0x00e00000' >> $PACK_FILE
-toHexFromStr `printf '0x%.8x' $Ubootfile_Size` >> $PACK_FILE
+toHexFromStr `printf '0x%.8x' $Uboot_Size` >> $PACK_FILE
 toHexFromStr '0xffffffff' >> $PACK_FILE
 : $((offset+=16))
 
@@ -331,7 +336,7 @@ env_data=$env_data$bootcmd
 env_data=$env_data'\x00'
 (( curenv_size++ ))
 
-env_data=$env_data"bootdelay=1"
+env_data=$env_data"bootdelay=0"
 env_data=$env_data'\x00'
 (( curenv_size+=12 ))
 
